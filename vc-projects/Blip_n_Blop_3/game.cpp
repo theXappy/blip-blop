@@ -2220,6 +2220,9 @@ void Game::updateDeformation() {
 //-----------------------------------------------------------------------------
 
 void Game::drawDeformation() {
+    // S.S.: Disabled. Causes huge lag on some GPUs, levels become unplayable.
+    return;
+
     DDBLTFX ddfx;
     Rect r;
     int pas = 20;
