@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.10)
 
 project(blipblop)
 
@@ -13,10 +13,21 @@ aux_source_directory(menus MENUS_SRC)
 
 if(WIN32)
     add_executable(blipblop ${SRC} ${ENGINE_SRC} ${MENUS_SRC})
-    target_link_libraries(blipblop PUBLIC ${SDL2_LIBRARIES})
+
+    # SDL2main.lib also defines main() (for its console-app entry shim), which
+    # conflicts with the game's own main().  Using SDL_MAIN_HANDLED prevents
+    # SDL_main.h from renaming main→SDL_main, so we link only SDL2 (not SDL2main).
+    target_compile_definitions(blipblop PRIVATE SDL_MAIN_HANDLED)
+    target_link_libraries(blipblop PUBLIC SDL2::SDL2)
 
     target_link_libraries(blipblop PUBLIC ${SDL2MIXER_LIBRARIES})
 
+    # find_package(SDL2) sets SDL2_INCLUDE_DIRS as a normal variable pointing to
+    # the flat include/ dir of the VC dev package (no SDL2/ subdir). The code
+    # uses <SDL2/SDL.h> style includes, so we use a staged include dir (created
+    # by build.ps1) that has the SDL2/ subfolder.  Unset the normal variable so
+    # the cache value supplied via -DSDL2_INCLUDE_DIRS takes effect.
+    unset(SDL2_INCLUDE_DIRS)
     target_include_directories(blipblop SYSTEM PUBLIC ${SDL2_INCLUDE_DIRS})
 
     set(CMAKE_INSTALL_UCRT_LIBRARIES true)

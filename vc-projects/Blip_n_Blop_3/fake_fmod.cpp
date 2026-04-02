@@ -1,6 +1,7 @@
 #include "fmod.h"
 
 #include <SDL2/SDL_mixer.h>
+#include <cstdio>
 
 extern "C" {
 struct FMUSIC_MODULE {};
